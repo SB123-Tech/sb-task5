@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# ChromaDB (large binary files - can be rebuilt from knowledge_base/)
+chroma_db/
+
+# IDE
+.vscode/
+.idea/
+
+# Trash
+.Trash-0/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large font files
+*.otf
+
+# Streamlit
+.streamlit/
