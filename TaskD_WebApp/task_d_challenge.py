@@ -31,9 +31,9 @@ base_url = "https://api.agicto.cn/v1"
 
 
 @st.cache_resource
-def init_clients(_api_key, _base_url):
+def init_clients(api_key_val, base_url_val):
     """初始化 LLM 客户端和向量数据库"""
-    llm_client = OpenAI(api_key=_api_key, base_url=_base_url)
+    llm_client = OpenAI(api_key=api_key_val, base_url=base_url_val)
     embedder = embedding_functions.SentenceTransformerEmbeddingFunction(
         model_name="BAAI/bge-small-zh-v1.5"
     )
@@ -47,10 +47,14 @@ def init_clients(_api_key, _base_url):
     return llm_client, collection
 
 
-llm_client, collection = init_clients(api_key, base_url)
-
-if collection is None:
-    st.sidebar.warning("知识库未初始化，请先运行 Task B 构建知识库")
+if api_key:
+    llm_client, collection = init_clients(api_key, base_url)
+    if collection is None:
+        st.sidebar.warning("知识库未初始化，请先运行 Task B 构建知识库")
+else:
+    llm_client = None
+    collection = None
+    st.info("请在侧边栏输入 API Key 开始使用")
 
 # ── 检索函数 ──
 
@@ -126,27 +130,29 @@ for msg in st.session_state.messages:
 question = st.chat_input("请输入你的农业问题...")
 
 if question:
-    # 显示用户问题
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.markdown(question)
 
-    # 生成回答
-    with st.chat_message("assistant"):
-        with st.spinner("正在检索知识库并生成回答..."):
-            answer, knowledge = ask_with_rag(question, top_k)
-            st.markdown(answer)
+    if not api_key:
+        with st.chat_message("assistant"):
+            st.markdown("请先在侧边栏输入 API Key")
+        st.session_state.messages.append({"role": "assistant", "content": "请先在侧边栏输入 API Key"})
+    else:
+        with st.chat_message("assistant"):
+            with st.spinner("正在检索知识库并生成回答..."):
+                answer, knowledge = ask_with_rag(question, top_k)
+                st.markdown(answer)
 
-    # 显示参考来源
-    if knowledge:
-        with st.expander("参考来源"):
-            for i, (doc, meta, dist) in enumerate(knowledge):
-                st.markdown(
-                    f"**来源 {i + 1}**: {meta['source']} (相关度: {1 - dist:.2f})"
-                )
-                st.text(doc[:300] + "...")
+        if knowledge:
+            with st.expander("参考来源"):
+                for i, (doc, meta, dist) in enumerate(knowledge):
+                    st.markdown(
+                        f"**来源 {i + 1}**: {meta['source']} (相关度: {1 - dist:.2f})"
+                    )
+                    st.text(doc[:300] + "...")
 
-    st.session_state.messages.append({"role": "assistant", "content": answer})
+        st.session_state.messages.append({"role": "assistant", "content": answer})
 
 # ── 知识库预览 ──
 with st.sidebar.expander("知识库文档列表"):

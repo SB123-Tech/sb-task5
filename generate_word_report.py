@@ -170,17 +170,17 @@ add_table(
 )
 
 add_heading_text('可视化结果', level=2)
-add_image('task_a_prompt_comparison.png', '图1: 三种 Prompt 策略的质量评分对比。Few-shot + Chain-of-Thought 策略获得最高评分（9/10）。')
-add_image('task_a_response_time.png', '图2: 各策略的响应时间与回答长度双轴对比。')
-add_image('task_a_radar.png', '图3: 多维评估雷达图。Few-shot 策略在专业性、结构性、准确性等维度全面领先。')
+add_image('TaskA_PromptEngineering/task_a_prompt_comparison.png', '图1: 三种策略的质量评分。给几个示例再让模型一步步推理，效果远好于直接问。')
+add_image('TaskA_PromptEngineering/task_a_response_time.png', '图2: 响应时间和回答长度。有意思的是 Few-shot 反而最快——可能因为输出更精简，没有废话。')
+add_image('TaskA_PromptEngineering/task_a_radar.png', '图3: 多维度打分。Few-shot 在专业性和准确性上拉满，基础 Prompt 各项都拉胯。')
 
 add_heading_text('多轮对话测试', level=2)
 add_para('模拟农业咨询场景的三轮对话（病害诊断 → 用药咨询 → 施用频率），模型展现出良好的上下文理解能力。')
 
 add_heading_text('结论', level=2)
-add_bullet('角色设定显著提升回答的专业性和可操作性')
-add_bullet('Few-shot + CoT 策略在专业诊断场景中效果最佳')
-add_bullet('结构化输出要求对农业技术指导场景至关重要')
+add_bullet('告诉模型"你是农业专家"之后，回答靠谱多了')
+add_bullet('给示例再配合一步步推理，效果最好')
+add_bullet('让模型按格式输出，对农业指导这种场景特别实用')
 
 # ═════════════ 任务 B ═════════════
 add_heading_text('任务 B：RAG 农业知识库问答系统', level=1)
@@ -194,20 +194,20 @@ add_code('知识文档 → 文本分块(500字/块, 50字重叠) → BGE向量�
          '用户提问 → 向量化 → 检索Top-K相关块 → 拼接Prompt → LLM生成回答')
 
 add_heading_text('知识库构成', level=2)
-add_image('task_b_kb_composition.png', '图4: 知识库包含4篇文档（diseases/planting/pesticide），共18个文本块。')
+add_image('TaskB_RAG/task_b_kb_composition.png', '图4: 知识库由4篇文档组成，切成了18个块。病害和农药类文档占了大部分。')
 
 add_heading_text('检索效果', level=2)
-add_para('对三个典型问题的检索结果：')
-add_image('task_b_retrieval_relevance.png', '图5: 三个问题的检索相关度。Top-3 检索的平均相关度在 0.70-0.80 之间。')
-add_image('task_b_heatmap.png', '图6: 检索相关度热力图。同类文档检索效果最佳。')
+add_para('挑了三个典型农业问题，看检索能不能找到对的东西：')
+add_image('TaskB_RAG/task_b_retrieval_relevance.png', '图5: 三个问题的检索相关度。相关性都在0.7以上，病害类问题匹配度最高——知识库里病害文档最详细。')
+add_image('TaskB_RAG/task_b_heatmap.png', '图6: 检索热力图。横轴是知识库里的文档，纵轴是问题。颜色越深越相关，能看出来同类问题对同类文档的匹配很准。')
 
-add_heading_text('RAG vs Direct LLM 对比', level=2)
-add_image('task_b_rag_comparison.png', '图7: 有 RAG 的回答能提供具体药品名称、浓度和安全间隔期，而无 RAG 的回答较为笼统。')
+add_heading_text('RAG vs 直接问 LLM', level=2)
+add_image('TaskB_RAG/task_b_rag_comparison.png', '图7: 左边是RAG的回答，给出了具体药名和浓度；右边直接问就很泛，全是"注意通风""合理施肥"这类正确的废话。')
 
 add_heading_text('关键发现', level=2)
-add_bullet('减少幻觉：RAG 将回答锚定在实际文档上，大幅减少编造信息')
-add_bullet('专业深度：知识库中的专业内容（农药浓度、安全间隔期）直接被引用')
-add_bullet('可追溯性：每个回答都能追溯到具体的参考文档')
+add_bullet('加了RAG之后模型不乱编了，回答有文档兜底')
+add_bullet('农药浓度、安全间隔期这些细节能从知识库直接拽出来，光靠模型自己记不住')
+add_bullet('每个回答都能找到出处，哪个文档哪一段说的一目了然')
 
 # ═════════════ 任务 C ═════════════
 add_heading_text('任务 C：GPU 服务器本地模型部署与性能对比', level=1)
@@ -238,34 +238,57 @@ add_table(
 )
 
 add_heading_text('可视化结果', level=2)
-add_image('task_c_response_time.png', '图8: 本地 GPU vs 云端 API 响应时间对比。云端 API 响应速度快 3.4 倍。')
-add_image('task_c_dual_comparison.png', '图9: 响应时间与输出长度双轴对比。本地模型输出更详细（+24%），但速度较慢。')
-add_image('task_c_throughput.png', '图10: 字符生成速度对比。云端 API 的吞吐量是本地 V100S 的 2.7 倍。')
+add_image('TaskC_GPUDeploy/task_c_response_time.png', '图8: 响应时间对比。云端5.98秒，本地20.11秒，差了3倍多。V100S确实老了。')
+add_image('TaskC_GPUDeploy/task_c_dual_comparison.png', '图9: 速度和质量的关系。本地虽然慢，但输出多了约160个字。')
+add_image('TaskC_GPUDeploy/task_c_throughput.png', '图10: 每秒生成字符数。云端110字/秒，本地41字/秒，接近3倍差距。')
 
 add_heading_text('讨论', level=2)
-add_bullet('云端优势：gpt-4o-mini 在速度上明显领先（5.98s vs 20.11s），得益于更强的基础设施')
-add_bullet('本地优势：无 API 费用、数据不出服务器、可完全控制模型行为')
-add_bullet('V100S 局限性：较老架构，FP16 推理速度有限；使用 vLLM 或 TensorRT-LLM 可显著提升')
+add_bullet('云端确实快，但每次调API都花钱，量大起来不划算')
+add_bullet('本地部署的数据不外传，而且想怎么改模型就怎么改，自由度大')
+add_bullet('V100S架构太老了，FP16跑不动。换vLLM或者TensorRT-LLM能快不少')
 
 # ═════════════ 任务 D ═════════════
 add_heading_text('任务 D：农业 AI 助手 Web 应用', level=1)
 
-add_heading_text('功能特性', level=2)
-add_bullet('Streamlit Web UI：简洁的聊天界面，侧边栏配置 API Key 和模型')
-add_bullet('RAG 引擎：BGE-small-zh-v1.5 向量检索 + ChromaDB 持久化知识库')
-add_bullet('多模型支持：可切换 gpt-4o-mini / qwen-plus')
-add_bullet('参考来源展示：每次回答附带检索到的文档来源和相关度')
+add_heading_text('功能', level=2)
+add_bullet('Streamlit做的界面，侧边栏填API Key、选模型')
+add_bullet('背后是RAG：BGE向量化 + ChromaDB存知识 + LLM生成答案')
+add_bullet('可以在gpt-4o-mini和qwen-plus之间切')
+add_bullet('每次回答会显示引用了哪些文档，哪段话来自哪里')
 
 add_heading_text('运行方式', level=2)
 add_code('streamlit run task_d_challenge.py --server.address 0.0.0.0 --server.port 8501')
 add_para('应用地址：http://localhost:8501')
 
 add_heading_text('系统截图', level=2)
-add_image('task_d_streamlit_app.png',
-    '图11: Streamlit 农业 AI 助手 Web 应用。测试问题："番茄叶片出现褐色斑点，是什么病？怎么防治？"。'
-    '系统通过 RAG 检索知识库，返回了包括晚疫病和早疫病的详细诊断及具体防治方案'
-    '（含农药名称、浓度、安全间隔期），并附带可追溯的参考来源。',
+add_image('TaskD_WebApp/task_d_streamlit_app.png',
+    '图11: 实际运行的界面。问"番茄叶片有褐色斑点"，系统从知识库里捞出相关文档，给出了晚疫病和早疫病的诊断，附带了具体的药名、浓度和安全间隔期，右边还标了参考来源。',
     width=5.8)
+
+# ═════════════ 关键代码截图 ═════════════
+add_heading_text('关键代码截图', level=1)
+add_para('各任务核心代码，存个档。')
+
+add_heading_text('Task A：Prompt Engineering', level=2)
+add_image('code_task_a_run.png', '图12: 三种策略的定义和API调用。', width=5.8)
+
+add_heading_text('Task B：RAG 系统', level=2)
+add_image('code_task_b_run.png', '图13: RAG完整流程——切文档、向量化、入库、检索、生成。', width=5.8)
+
+add_heading_text('Task C：GPU 推理服务', level=2)
+add_image('code_api_server.png', '图14: Flask加载Qwen2.5-7B，提供OpenAI兼容接口。', width=5.8)
+
+add_heading_text('Task C：性能测试', level=2)
+add_image('code_bench.png', '图15: 本地和云端各跑3轮，算平均时间和输出长度。', width=5.8)
+
+add_heading_text('Task C：vLLM 部署脚本', level=2)
+add_image('code_vllm_setup.png', '图16: GPU服务器上装环境、下模型的一套脚本。', width=5.8)
+
+add_heading_text('Task D：Streamlit 应用', level=2)
+add_image('code_task_d_challenge.png', '图17: Streamlit聊天界面，接RAG和多模型切换。', width=5.8)
+
+add_heading_text('Git 提交记录', level=2)
+add_image('提交截图.png', '图18: GitHub上8次提交，按任务分组的。', width=5.8)
 
 # ═════════════ 任务总结 ═════════════
 add_heading_text('任务总结', level=1)
